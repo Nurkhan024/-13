@@ -1,0 +1,148 @@
+using System;
+using System.Collections.Generic;
+
+class HiringProcess
+{
+    private List<string> EmployeeDatabase = new List<string>();
+
+    public void StartProcess()
+    {
+        Console.WriteLine("Начало процесса найма.");
+        
+        var jobRequest = CreateJobRequest("Руководитель отдела", "Описание вакансии");
+        bool isRequestApproved = ReviewJobRequest(jobRequest);
+
+        if (!isRequestApproved)
+        {
+            Console.WriteLine("Заявка не утверждена. Процесс завершен.");
+            return;
+        }
+
+        PublishVacancy(jobRequest);
+        List<string> candidateApplications = AcceptApplications();
+        List<string> selectedCandidates = ReviewApplications(candidateApplications);
+
+        foreach (var candidate in selectedCandidates)
+        {
+            bool interviewPassed = ConductInterviews(candidate);
+            if (interviewPassed)
+            {
+                MakeOffer(candidate);
+            }
+            else
+            {
+                NotifyRejection(candidate);
+            }
+        }
+
+        foreach (var candidate in selectedCandidates)
+        {
+            if (ConfirmOffer(candidate))
+            {
+                AddToDatabase(candidate);
+                NotifyIT(candidate);
+            }
+        }
+
+        Console.WriteLine("Процесс найма завершен.");
+    }
+
+    private Dictionary<string, string> CreateJobRequest(string manager, string description)
+    {
+        Console.WriteLine($"{manager} создает заявку на вакансию.");
+        return new Dictionary<string, string>
+        {
+            { "Manager", manager },
+            { "Description", description },
+            { "Status", "Pending" }
+        };
+    }
+
+    private bool ReviewJobRequest(Dictionary<string, string> request)
+    {
+        Console.WriteLine("HR проверяет заявку...");
+        if (request["Description"].ToLower().Contains("доработка"))
+        {
+            Console.WriteLine("Заявка требует доработки. Уведомление отправлено.");
+            return false;
+        }
+
+        Console.WriteLine("Заявка утверждена.");
+        return true;
+    }
+
+    private void PublishVacancy(Dictionary<string, string> jobRequest)
+    {
+        Console.WriteLine("Вакансия опубликована на сайте.");
+    }
+
+    private List<string> AcceptApplications()
+    {
+        Console.WriteLine("Кандидаты подают заявки...");
+        return new List<string> { "Кандидат1", "Кандидат2", "Кандидат3" };
+    }
+
+    private List<string> ReviewApplications(List<string> applications)
+    {
+        Console.WriteLine("HR проверяет анкеты...");
+        var selectedCandidates = new List<string>();
+
+        foreach (var application in applications)
+        {
+            if (application.Contains("Кандидат"))
+            {
+                Console.WriteLine($"{application} прошел отбор.");
+                selectedCandidates.Add(application);
+            }
+            else
+            {
+                Console.WriteLine($"{application} отклонен.");
+            }
+        }
+
+        return selectedCandidates;
+    }
+
+    private bool ConductInterviews(string candidate)
+    {
+        Console.WriteLine($"HR проводит интервью с {candidate}.");
+        Console.WriteLine($"Руководитель отдела проводит техническое собеседование с {candidate}.");
+        return true; 
+    }
+
+    private void MakeOffer(string candidate)
+    {
+        Console.WriteLine($"{candidate} получил оффер.");
+    }
+
+    private void NotifyRejection(string candidate)
+    {
+        Console.WriteLine($"{candidate} получил уведомление об отказе.");
+    }
+
+    private bool ConfirmOffer(string candidate)
+    {
+        Console.WriteLine($"{candidate} подтверждает оффер.");
+        return true;
+    }
+
+    private void AddToDatabase(string candidate)
+    {
+        EmployeeDatabase.Add(candidate);
+        Console.WriteLine($"{candidate} добавлен в базу данных сотрудников.");
+    }
+
+    private void NotifyIT(string candidate)
+    {
+        Console.WriteLine($"HR уведомляет IT о настройке рабочего места для {candidate}.");
+    }
+}
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        HiringProcess hiringProcess = new HiringProcess();
+        hiringProcess.StartProcess();
+    }
+}
