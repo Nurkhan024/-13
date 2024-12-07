@@ -1,0 +1,101 @@
+using System;
+using System.Collections.Generic;
+
+public class EventBookingSystem
+{
+    // Список доступных площадок
+    private List<Venue> venues;
+
+    public EventBookingSystem()
+    {
+        venues = new List<Venue>
+        {
+            new Venue { Name = "Площадка 1", IsAvailable = true },
+            new Venue { Name = "Площадка 2", IsAvailable = false },
+            new Venue { Name = "Площадка 3", IsAvailable = true }
+        };
+    }
+
+    // Проверка доступности площадки
+    public bool CheckVenueAvailability(string venueName)
+    {
+        var venue = venues.Find(v => v.Name == venueName);
+        if (venue != null)
+        {
+            return venue.IsAvailable;
+        }
+        return false;
+    }
+
+    // Подтверждение бронирования
+    public bool ConfirmBooking(string venueName, decimal paymentAmount)
+    {
+        // Шаг 1: Проверка доступности площадки
+        if (!CheckVenueAvailability(venueName))
+        {
+            Console.WriteLine("Площадка недоступна. Пожалуйста, выберите другую.");
+            return false;
+        }
+
+        // Шаг 2: Обработка платежа
+        var paymentGateway = new PaymentGateway();
+        if (paymentGateway.ProcessPayment(paymentAmount))
+        {
+            Console.WriteLine($"Бронирование площадки '{venueName}' подтверждено!");
+            return true;
+        }
+        else
+        {
+            Console.WriteLine("Платеж отклонен. Пожалуйста, повторите оплату.");
+            return false;
+        }
+    }
+}
+
+// Класс для представления площадки
+public class Venue
+{
+    public string Name { get; set; }
+    public bool IsAvailable { get; set; }
+}
+
+// Класс для обработки платежей
+public class PaymentGateway
+{
+    public bool ProcessPayment(decimal amount)
+    {
+        // Здесь будет логика обработки платежа
+        // Для упрощения, пусть платеж всегда успешен, если сумма больше 100
+        if (amount > 100)
+        {
+            Console.WriteLine("Платеж успешен!");
+            return true;
+        }
+        else
+        {
+            Console.WriteLine("Платеж отклонен. Сумма слишком мала.");
+            return false;
+        }
+    }
+}
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        var bookingSystem = new EventBookingSystem();
+
+        // Проверка доступности площадки и бронирование
+        string venueName = "Площадка 1";
+        decimal paymentAmount = 150;
+
+        if (bookingSystem.ConfirmBooking(venueName, paymentAmount))
+        {
+            Console.WriteLine("Процесс бронирования завершен успешно.");
+        }
+        else
+        {
+            Console.WriteLine("Процесс бронирования завершился неудачей.");
+        }
+    }
+}
